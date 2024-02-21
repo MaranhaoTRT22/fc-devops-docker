@@ -1,7 +1,24 @@
+# Versão do Composer
 version: '3'
 
+# Serviços que serão levantados
 services: 
 
+  # Service 'app'
+  # 'build' define que o serviço 'app' deverá ser 'buildado' toda vez que for levantado
+  # 'context' define tanto um caminho para um diretório contendo o Dockerfile quanto uma URL para um repositório git .
+  # Define o nome do container o qual o serviço 'app' está associado
+  # Entrypoint define o comando a ser rodado logo após o container 'app' ter sido levantado
+  #   'dockerize' is a utility to simplify running applications in docker containers. It allows you to:
+  #     - Generate application configuration files at container startup time from templates and container environment variables
+  #     - Tail multiple log files to stdout and/or stderr
+  #     - Wait for other services to be available using TCP, HTTP(S), unix before starting the main process.
+  # O comando 'docker-entrypoint.sh' só será rodado depois do retorno positivo do 'dockerize'
+  # Associa o container 'app' à rede 'node-network'
+  # Cria um volume que espelha a pasta local 'node' na pasta 'usr/src/app' do container 'app'
+  # Habilita um terminal iterativo TTY com o container 'app'
+  # Associa a porta 3000 da máquina local à porta 3000 do container 'app'
+  # 'depends_on' Define a ordem na qual os containers subirão, como 'app' depende de 'db' ele será rodado após o up de 'db'
   app:
     build: 
       context: node
@@ -17,6 +34,13 @@ services:
     depends_on: 
        - db
 
+  # Service 'db' que virá da imagem 'mysql:5.7'
+  # Peculiaridade do docker MySQL: deve-se rodar o comando '--innodb-use-native-aio=0' em toda inicialização
+  # Nome do container é 'db', será reiniciado automaticamente sempre
+  # Disponibiliza um terminal iterativo TTY
+  # Cria um volume que espelha a pasta mysql na pasta var/lib/mysql do container db
+  # Seta variáveis de ambiente do MySQL na inicialização do container
+  # Associa o container à rede 'node-network'
   db:
     image: mysql:5.7
     command: --innodb-use-native-aio=0
@@ -31,8 +55,8 @@ services:
     networks: 
       - node-network
 
-    
-
+# Define as redes que serão levantadas
+# Nome da rede: 'node-network' e o tipo (driver a ser utilizado) será 'bridge'
 networks: 
   node-network:
-    driver: bridge      
+    driver: bridge

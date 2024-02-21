@@ -4,6 +4,7 @@ WORKDIR /var/www
 
 RUN apt-get update && \
     apt-get install libzip-dev -y && \
+    apt-get clean &&\
     docker-php-ext-install zip
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
